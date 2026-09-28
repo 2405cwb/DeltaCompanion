@@ -1,28 +1,203 @@
-<!--index.wxml-->
-<navigation-bar title="Weixin" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="userinfo">
-      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
-        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
-        </button>
-        <view class="nickname-wrapper">
-          <text class="nickname-label">昵称</text>
-          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
+<navigation-bar
+  title="组队陪玩"
+  back="{{false}}"
+  color="#ffffff"
+  background="#111827">
+</navigation-bar>
+
+<scroll-view class="page-scroll" scroll-y>
+
+  <view class="page">
+
+    <!-- 顶部 -->
+    <view class="hero">
+      <view class="hero-title">
+        找个靠谱队友
+      </view>
+
+      <view class="hero-subtitle">
+        三角洲组队 · 即时预约
+      </view>
+    </view>
+
+    <!-- 模式 -->
+    <view class="filter-section">
+
+      <view class="filter-title">
+        擅长模式
+      </view>
+
+      <view class="filter-row">
+        <view
+          wx:for="{{modes}}"
+          wx:key="*this"
+          class="filter-chip {{selectedMode === item ? 'filter-chip-active' : ''}}"
+          data-value="{{item}}"
+          bindtap="onModeTap"
+        >
+          {{item}}
         </view>
-      </block>
-      <block wx:elif="{{!hasUserInfo}}">
-        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-        <view wx:else> 请使用2.10.4及以上版本基础库 </view>
-      </block>
-      <block wx:else>
-        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-      </block>
+      </view>
+
     </view>
-    <view class="usermotto">
-      <text class="user-motto">{{motto}}</text>
+
+    <!-- 性别 -->
+    <view class="filter-section">
+
+      <view class="filter-title">
+        性别
+      </view>
+
+      <view class="filter-row">
+        <view
+          wx:for="{{genders}}"
+          wx:key="*this"
+          class="filter-chip {{selectedGender === item ? 'filter-chip-active' : ''}}"
+          data-value="{{item}}"
+          bindtap="onGenderTap"
+        >
+          {{item}}
+        </view>
+      </view>
+
     </view>
+
+    <!-- 在线 -->
+    <view class="online-filter">
+
+      <view>
+        <view class="filter-title">
+          只看在线
+        </view>
+
+        <view class="online-description">
+          优先寻找现在可以接单的陪玩
+        </view>
+      </view>
+
+      <switch
+        checked="{{onlyOnline}}"
+        color="#22c55e"
+        bindchange="onOnlineChange"
+      />
+
+    </view>
+
+    <!-- 标题 -->
+    <view class="list-header">
+
+      <view class="list-title">
+        推荐陪玩
+      </view>
+
+      <view class="result-count">
+        {{visibleCompanions.length}} 人
+      </view>
+
+    </view>
+
+    <!-- 空数据 -->
+    <view
+      wx:if="{{visibleCompanions.length === 0}}"
+      class="empty"
+    >
+      暂无符合条件的陪玩
+    </view>
+
+    <!-- 陪玩列表 -->
+    <view
+      wx:for="{{visibleCompanions}}"
+      wx:key="id"
+      class="companion-card"
+      data-id="{{item.id}}"
+      bindtap="onCompanionTap"
+    >
+
+      <view class="card-top">
+
+        <view class="avatar">
+          {{item.nickname.substring(0, 1)}}
+
+          <view
+            class="online-dot {{item.online ? 'online' : 'offline'}}"
+          ></view>
+        </view>
+
+        <view class="profile">
+
+          <view class="nickname-row">
+
+            <text class="nickname">
+              {{item.nickname}}
+            </text>
+
+            <text class="gender">
+              {{item.gender}}
+            </text>
+
+          </view>
+
+          <view class="rank">
+            {{item.mode}} · {{item.rank}}
+          </view>
+
+          <view class="description">
+            {{item.description}}
+          </view>
+
+        </view>
+
+      </view>
+
+      <!-- 标签 -->
+      <view class="tag-row">
+
+        <view
+          wx:for="{{item.tags}}"
+          wx:for-item="tag"
+          wx:key="*this"
+          class="tag"
+        >
+          {{tag}}
+        </view>
+
+      </view>
+
+      <view class="card-bottom">
+
+        <view class="rating">
+          <text class="star">★</text>
+          <text class="rating-score">
+            {{item.rating}}
+          </text>
+
+          <text class="reviews">
+            {{item.reviewCount}} 条评价
+          </text>
+        </view>
+
+        <view class="price">
+
+          <text class="price-symbol">
+            ￥
+          </text>
+
+          <text class="price-number">
+            {{item.price}}
+          </text>
+
+          <text class="price-unit">
+            /小时
+          </text>
+
+        </view>
+
+      </view>
+
+    </view>
+
+    <view class="bottom-space"></view>
+
   </view>
+
 </scroll-view>
